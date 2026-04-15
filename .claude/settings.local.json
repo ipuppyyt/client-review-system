@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm lint *)",
+      "Bash(npx tsc *)",
+      "Bash(pnpm db:generate *)",
+      "Bash(pnpm build *)",
+      "Bash(pnpm dev *)"
+    ]
+  }
+}

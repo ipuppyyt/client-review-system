@@ -36,19 +36,27 @@ This is a **fresh project** that has been initialized with the following:
 - **Cookie configuration** for NextAuth tokens
 - **Zod validation** for form inputs
 - **Bcrypt password hashing**
-- **Basic API routes** structure in `app/api/`
+- **First-time setup flow** (complete)
+  - `proxy.ts` - Route protection based on user existence
+  - `/setup` page - Admin account, organization, and branding form
+  - `/api/setup` - Transactional setup API (creates org, branding, superadmin)
+- **Login page** at `/login` with email/password form
 - **Dashboard routes** structure in `app/dashboard/`
-- **Login and Setup pages** at `/login` and `/setup`
 - **Docker setup** with PostgreSQL
 
 ### 📦 Project Structure
 
 ```
 /app
-  /api          - API routes (basic structure)
-  /dashboard    - Dashboard routes (basic structure)
-  /login        - Login page
-  /setup        - Setup page (first-time users)
+  /api
+    /auth/[...nextauth]/route.ts  - NextAuth API route
+    /setup/route.ts               - Setup API endpoint
+  /dashboard    - Dashboard routes (structure ready)
+  /login
+    /page.tsx                     - Login page
+    /login-form.tsx               - Login form component
+  /setup
+    /page.tsx                     - First-time setup page
   /unauthorized - 401 page
   layout.tsx    - Root layout
   favicon.ico   - Favicon
@@ -63,7 +71,7 @@ This is a **fresh project** that has been initialized with the following:
   index.ts              - Config exports
   env.ts                - Environment variables
   config.tsx            - App configuration (cookies, addresses)
-/components             - Component folder (currently empty)
+/components             - Component folder (custom Tailwind components)
 /auth
   index.ts              - NextAuth configuration
   callbacks.ts          - Auth callbacks for sessions/JWT
@@ -76,7 +84,7 @@ compose.yml
 .env.example
 next.config.ts
 prisma.config.ts
-proxy.ts
+proxy.ts                - Middleware proxy (auth + setup protection)
 ```
 
 ### 📊 Database Schema
@@ -423,14 +431,13 @@ pnpm db:push         # Push schema to database
 
 ### 17. Next Steps
 
-1. Complete `/setup` page with superadmin creation
-2. Build public review submission page at `/r/[slug]`
-3. Implement admin dashboard pages
-4. Create review form and submission logic
-5. Build review approval workflow
-6. Implement branding editor
-7. Create public API endpoints
-8. Add rate limiting and security headers
+1. Build public review submission page at `/r/[slug]`
+2. Implement admin dashboard pages (`/dashboard`, `/dashboard/reviews`, `/dashboard/branding`)
+3. Create review form and submission logic
+4. Build review approval workflow (toggle `is_published`)
+5. Implement branding editor UI
+6. Create public API endpoints (`GET /api/reviews/[slug]`)
+7. Add rate limiting and security headers
 
 ---
 
