@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String        @id @default(uuid())
+  email           String        @unique
+  password_hash   String
+  role            Role          @default(ADMIN)
+  organization_id String?
+  created_at      DateTime      @default(now())
+  organization    Organization? @relation(fields: [organization_id], references: [id])
+
+  @@map("users")
+}
+
+model Organization {
+  id         String    @id @default(uuid())
+  name       String
+  slug       String    @unique
+  created_at DateTime  @default(now())
+  branding   Branding?
+  reviews    Review[]
+  users      User[]
+
+  @@map("organizations")
+}
+
+model Branding {
+  id              String       @id @default(uuid())
+  organization_id String       @unique
+  logo_url        String?
+  primary_color   String       @default("#000000")
+  secondary_color String       @default("#ffffff")
+  font_family     String       @default("Inter")
+  organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@map("brandings")
+}
+
+model Review {
+  id              String       @id @default(uuid())
+  organization_id String
+  customer_name   String
+  rating          Int
+  message         String
+  is_published    Boolean      @default(false)
+  created_at      DateTime     @default(now())
+  organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+}
