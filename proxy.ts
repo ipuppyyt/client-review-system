@@ -3,17 +3,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 
-let usersExistCache: boolean | null = null;
-
 async function checkUsersExist(): Promise<boolean> {
-  if (usersExistCache !== null) {
-    return usersExistCache;
-  }
-
   try {
     const userCount = await prisma.user.count();
-    usersExistCache = userCount > 0;
-    return usersExistCache;
+    return userCount > 0;
   } catch (error) {
     console.error("Error checking users:", error);
     return false;
@@ -60,5 +53,14 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder (static assets)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
+  ],
 };

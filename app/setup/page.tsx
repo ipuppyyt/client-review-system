@@ -1,12 +1,12 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Building2, User, Palette } from "lucide-react";
+import { Alert } from "@/components/alert";
 
 const setupSchema = z.object({
   email: z.email("Please enter a valid email address"),
@@ -57,19 +57,9 @@ export default function SetupPage() {
         throw new Error(result.error || "Setup failed");
       }
 
-      // Sign in the user automatically
-      const signInResult = await signIn("credentials", {
-        redirect: false,
-        email: data.email,
-        password: data.password,
-      });
-
-      if (signInResult?.error) {
-        console.error("Auto sign-in failed:", signInResult.error);
-        // Still redirect to dashboard - they can log in manually if needed
-      }
-
-      router.push("/dashboard");
+      // Redirect to login - user will log in manually
+      // This ensures the session is properly established before accessing dashboard
+      router.push("/login");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
@@ -88,8 +78,8 @@ export default function SetupPage() {
           </div>
 
           {error && (
-            <div className="mb-6 p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-100">
-              {error}
+            <div className="mb-6">
+              <Alert type="error" message={error} onClose={() => setError(null)} />
             </div>
           )}
 

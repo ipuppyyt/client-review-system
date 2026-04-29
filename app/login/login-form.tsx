@@ -7,6 +7,7 @@ import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { Alert } from "@/components/alert";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -15,6 +16,13 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+const inputClass = `flex h-10 w-full rounded-lg border border-gray-300 dark:border-gray-700
+  bg-white dark:bg-gray-800 px-3 py-2 text-sm
+  text-gray-900 dark:text-gray-100
+  placeholder:text-gray-400 dark:placeholder:text-gray-500
+  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+  disabled:cursor-not-allowed disabled:opacity-50 transition-colors`;
+
 export default function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -22,10 +30,7 @@ export default function LoginForm() {
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   async function onSubmit(data: LoginFormValues) {
@@ -40,12 +45,12 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        setError("Invalid email or password. Please try again.");
       } else {
         router.push("/dashboard");
         router.refresh();
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred.");
     } finally {
       setIsLoading(false);
@@ -55,13 +60,12 @@ export default function LoginForm() {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
       {error && (
-        <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-100">
-          {error}
-        </div>
+        <Alert type="error" message={error} onClose={() => setError(null)} />
       )}
 
-      <div className="space-y-2 relative">
-        <label className="text-sm font-medium leading-none text-gray-700" htmlFor="email">
+      {/* Email */}
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="email">
           Email
         </label>
         <input
@@ -69,41 +73,48 @@ export default function LoginForm() {
           id="email"
           type="email"
           placeholder="name@example.com"
-          className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+          className={inputClass}
           disabled={isLoading}
+          autoComplete="email"
         />
         {form.formState.errors.email && (
-          <p className="text-xs text-red-500 absolute -bottom-5 left-0">
+          <p className="text-xs text-red-500 dark:text-red-400">
             {form.formState.errors.email.message}
           </p>
         )}
       </div>
 
-      <div className="space-y-2 relative pt-2">
-        <label className="text-sm font-medium leading-none text-gray-700" htmlFor="password">
+      {/* Password */}
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="password">
           Password
         </label>
         <input
           {...form.register("password")}
           id="password"
           type="password"
-          className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+          placeholder="••••••••"
+          className={inputClass}
           disabled={isLoading}
+          autoComplete="current-password"
         />
         {form.formState.errors.password && (
-          <p className="text-xs text-red-500 absolute -bottom-5 left-0">
+          <p className="text-xs text-red-500 dark:text-red-400">
             {form.formState.errors.password.message}
           </p>
         )}
       </div>
 
-      <div className="pt-4">
+      <div className="pt-2">
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex w-full items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 bg-gray-900 text-white shadow hover:bg-gray-900/90 h-10 px-4 py-2"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg text-sm font-medium
+            bg-indigo-600 hover:bg-indigo-700 text-white h-10 px-4 py-2
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500
+            disabled:pointer-events-none disabled:opacity-50 transition-colors"
         >
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
           {isLoading ? "Signing in..." : "Sign in"}
         </button>
       </div>
