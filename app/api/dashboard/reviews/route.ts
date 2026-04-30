@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
         // Fetch all reviews for organization
         const reviews = await prisma.review.findMany({
             where: { organization_id: orgId },
+            include: { client: true },
             orderBy: { created_at: 'desc' },
         });
 

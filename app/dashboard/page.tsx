@@ -125,32 +125,10 @@ export default function DashboardPage() {
 
             {/* Lower Cards */}
             <FluidGrid cols={2}>
-                {/* API Endpoint */}
-                <Card>
-                    <CardBody className="p-5 sm:p-6 flex flex-col h-full">
-                        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                            Public API Endpoint
-                        </h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                            Use this endpoint to fetch your published reviews
-                        </p>
-                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 font-mono text-sm text-gray-700 dark:text-gray-300 break-all mt-auto">
-                            {orgSlug ? apiEndpoint : <span className="text-gray-400">Loading...</span>}
-                        </div>
-                        <button
-                            onClick={handleCopy}
-                            disabled={!orgSlug}
-                            className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors
-                                bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                            {copied ? 'Copied!' : 'Copy Endpoint'}
-                        </button>
-                    </CardBody>
-                </Card>
+
 
                 {/* Getting Started */}
-                <Card>
+                <Card className="col-span-2 sm:col-span-1">
                     <CardBody className="p-5 sm:p-6 flex flex-col h-full">
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                             Getting Started
@@ -158,9 +136,9 @@ export default function DashboardPage() {
                         <ul className="space-y-4">
                             {[
                                 { step: 1, text: <>Go to <strong>Branding</strong> to customize your review form</> },
-                                { step: 2, text: 'Share your review form URL with customers' },
+                                { step: 2, text: <>Create clients in the <strong>Clients</strong> tab to generate unique review links</> },
                                 { step: 3, text: <>Approve reviews in the <strong>Reviews</strong> section</> },
-                                { step: 4, text: 'Embed reviews on your website using the API' },
+                                { step: 4, text: <>Embed reviews on your website using the <strong>API Docs</strong></> },
                             ].map(({ step, text }) => (
                                 <li key={step} className="flex gap-3 items-start">
                                     <span className="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-full w-7 h-7 flex items-center justify-center text-sm font-semibold shrink-0">

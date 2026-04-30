@@ -37,10 +37,18 @@ export async function GET(
             },
             select: {
                 id: true,
-                customer_name: true,
                 rating: true,
                 message: true,
+                photos: true,
+                videos: true,
                 created_at: true,
+                client: {
+                    select: {
+                        name: true,
+                        company_name: true,
+                        logo_url: true,
+                    }
+                }
             },
             orderBy: { created_at: 'desc' },
         });
@@ -57,63 +65,4 @@ export async function GET(
     }
 }
 
-export async function POST(
-    request: NextRequest,
-    { params }: { params: Promise<{ slug: string }> }
-) {
-    try {
-        const { slug } = await params;
-        const { customer_name, rating, message } = await request.json();
 
-        // Validate input
-        if (!customer_name || !rating || !message) {
-            return NextResponse.json(
-                { error: 'Missing required fields' },
-                { status: 400 }
-            );
-        }
-
-        if (rating < 1 || rating > 5) {
-            return NextResponse.json(
-                { error: 'Rating must be between 1 and 5' },
-                { status: 400 }
-            );
-        }
-
-        // Find organization by slug
-        const organization = await prisma.organization.findUnique({
-            where: { slug },
-        });
-
-        if (!organization) {
-            return NextResponse.json(
-                { error: 'Organization not found' },
-                { status: 404 }
-            );
-        }
-
-        // Create review (unpublished by default)
-        const review = await prisma.review.create({
-            data: {
-                organization_id: organization.id,
-                customer_name,
-                rating,
-                message,
-                is_published: false,
-            },
-        });
-
-        // Invalidate caches
-        await cache.del(cacheKeys.publicReviews(slug));
-        await cache.del(cacheKeys.dashboardReviews(organization.id));
-        await cache.del(cacheKeys.dashboardStats(organization.id));
-
-        return NextResponse.json(review, { status: 201 });
-    } catch (error) {
-        console.error('Create review error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
-    }
-}

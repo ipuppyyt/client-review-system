@@ -17,6 +17,7 @@ model Organization {
   created_at DateTime  @default(now())
   branding   Branding?
   reviews    Review[]
+  clients    Client[]
   users      User[]
 
   @@map("organizations")
@@ -34,15 +35,34 @@ model Branding {
   @@map("brandings")
 }
 
+model Client {
+  id              String       @id @default(uuid())
+  organization_id String
+  name            String
+  company_name    String?
+  logo_url        String?
+  email           String?
+  token           String       @unique @default(uuid())
+  is_completed    Boolean      @default(false)
+  created_at      DateTime     @default(now())
+  organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  review          Review?
+
+  @@map("clients")
+}
+
 model Review {
   id              String       @id @default(uuid())
   organization_id String
-  customer_name   String
+  client_id       String       @unique
   rating          Int
   message         String
+  photos          String[]     @default([])
+  videos          String[]     @default([])
   is_published    Boolean      @default(false)
   created_at      DateTime     @default(now())
   organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  client          Client       @relation(fields: [client_id], references: [id], onDelete: Cascade)
 
   @@map("reviews")
 }

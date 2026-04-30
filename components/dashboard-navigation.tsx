@@ -7,6 +7,8 @@ import {
     MessageSquare,
     Palette,
     Settings,
+    Users,
+    Code,
 } from 'lucide-react';
 
 interface NavItem {
@@ -21,8 +23,10 @@ interface DashboardNavigationProps {
 
 const navItems: NavItem[] = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/dashboard/clients', label: 'Clients', icon: Users },
     { href: '/dashboard/reviews', label: 'Reviews', icon: MessageSquare },
     { href: '/dashboard/branding', label: 'Branding', icon: Palette },
+    { href: '/dashboard/api-docs', label: 'API Docs', icon: Code },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 

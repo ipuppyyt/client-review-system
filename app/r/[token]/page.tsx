@@ -19,40 +19,42 @@ interface OrganizationInfo {
 
 export default function ReviewSubmissionPage() {
     const params = useParams();
-    const slug = params.slug as string;
+    const token = params.token as string;
 
     const [branding, setBranding] = useState<Branding | null>(null);
     const [organization, setOrganization] = useState<OrganizationInfo | null>(null);
+    const [clientName, setClientName] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
 
     const [formData, setFormData] = useState({
-        customer_name: '',
         rating: 5,
         message: '',
+        photos: [] as string[],
+        videos: [] as string[],
     });
 
     useEffect(() => {
-        fetchBrandingAndOrg();
-    }, [slug]);
+        if (token) fetchLinkData();
+    }, [token]);
 
-    const fetchBrandingAndOrg = async () => {
+    const fetchLinkData = async () => {
         try {
-            // Fetch organization info and branding
-            const response = await fetch(`/api/reviews/${slug}`);
-            // This endpoint doesn't exist yet for branding, so we'll create a dedicated one
-
-            // For now, fetch from a dedicated endpoint
-            const brandingResponse = await fetch(`/api/reviews/${slug}/branding`);
-            if (brandingResponse.ok) {
-                const data = await brandingResponse.json();
+            const response = await fetch(`/api/reviews/link/${token}`);
+            if (response.ok) {
+                const data = await response.json();
                 setBranding(data.branding);
                 setOrganization(data.organization);
+                setClientName(data.client.name);
+            } else {
+                const data = await response.json();
+                setError(data.error || 'Invalid or expired link');
             }
         } catch (error) {
-            console.error('Failed to fetch branding:', error);
+            console.error('Failed to fetch link data:', error);
+            setError('An error occurred. Please try again.');
             // Fallback to defaults
             setBranding({
                 logo_url: null,
@@ -81,7 +83,7 @@ export default function ReviewSubmissionPage() {
         setError('');
 
         try {
-            const response = await fetch(`/api/reviews/${slug}`, {
+            const response = await fetch(`/api/reviews/link/${token}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -89,7 +91,7 @@ export default function ReviewSubmissionPage() {
 
             if (response.ok) {
                 setSubmitted(true);
-                setFormData({ customer_name: '', rating: 5, message: '' });
+                setFormData({ rating: 5, message: '', photos: [], videos: [] });
                 setTimeout(() => setSubmitted(false), 5000);
             } else {
                 setError('Failed to submit review. Please try again.');
@@ -136,13 +138,13 @@ export default function ReviewSubmissionPage() {
                         className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 px-4"
                         style={{ fontFamily: branding?.font_family || 'Inter' }}
                     >
-                        {organization?.name || 'Share Your Feedback'}
+                        {organization?.name ? `${organization.name} Values Your Feedback` : 'Share Your Feedback'}
                     </h1>
                     <p
                         className="text-gray-600 text-sm sm:text-base px-4"
                         style={{ fontFamily: branding?.font_family || 'Inter' }}
                     >
-                        We'd love to hear about your experience
+                        Hi {clientName}, we'd love to hear about your experience!
                     </p>
                 </div>
 
@@ -170,27 +172,6 @@ export default function ReviewSubmissionPage() {
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-                            {/* Name */}
-                            <div>
-                                <label
-                                    className="block text-sm font-medium text-gray-900 mb-2.5"
-                                    style={{ fontFamily: branding?.font_family || 'Inter' }}
-                                >
-                                    Your Name
-                                </label>
-                                <input
-                                    type="text"
-                                    name="customer_name"
-                                    value={formData.customer_name}
-                                    onChange={handleInputChange}
-                                    placeholder="John Doe"
-                                    required
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-shadow text-base"
-                                    style={{
-                                        fontFamily: branding?.font_family || 'Inter',
-                                    }}
-                                />
-                            </div>
 
                             {/* Rating */}
                             <div>
@@ -242,6 +223,64 @@ export default function ReviewSubmissionPage() {
                                         fontFamily: branding?.font_family || 'Inter',
                                     }}
                                 />
+                            </div>
+
+                            {/* Media Uploads (Optional) */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label
+                                        className="block text-sm font-medium text-gray-900 mb-2.5"
+                                        style={{ fontFamily: branding?.font_family || 'Inter' }}
+                                    >
+                                        Photos (Optional)
+                                    </label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 transition-colors"
+                                        onChange={(e) => {
+                                            // In a real app, this would upload to S3/Cloudinary
+                                            // For now we'll just store the mock string to demonstrate functionality
+                                            if (e.target.files?.length) {
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    photos: Array.from(e.target.files!).map(f => URL.createObjectURL(f))
+                                                }));
+                                            }
+                                        }}
+                                        style={{ fontFamily: branding?.font_family || 'Inter' }}
+                                    />
+                                    {formData.photos.length > 0 && (
+                                        <p className="text-xs text-gray-500 mt-2">{formData.photos.length} photo(s) selected</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label
+                                        className="block text-sm font-medium text-gray-900 mb-2.5"
+                                        style={{ fontFamily: branding?.font_family || 'Inter' }}
+                                    >
+                                        Videos (Optional)
+                                    </label>
+                                    <input
+                                        type="file"
+                                        accept="video/*"
+                                        multiple
+                                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 transition-colors"
+                                        onChange={(e) => {
+                                            if (e.target.files?.length) {
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    videos: Array.from(e.target.files!).map(f => URL.createObjectURL(f))
+                                                }));
+                                            }
+                                        }}
+                                        style={{ fontFamily: branding?.font_family || 'Inter' }}
+                                    />
+                                    {formData.videos.length > 0 && (
+                                        <p className="text-xs text-gray-500 mt-2">{formData.videos.length} video(s) selected</p>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Submit Button */}
