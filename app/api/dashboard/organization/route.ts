@@ -1,5 +1,6 @@
 import { auth } from '@/auth';
 import { prisma } from '@/lib/db';
+import { cache, cacheKeys } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -22,6 +23,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const cacheKey = cacheKeys.dashboardOrganization(orgId);
+    const cachedOrg = await cache.get(cacheKey);
+    if (cachedOrg) {
+      return NextResponse.json(cachedOrg);
+    }
+
     // Fetch organization
     const organization = await prisma.organization.findUnique({
       where: { id: orgId },
@@ -33,6 +40,8 @@ export async function GET(request: NextRequest) {
         { status: 404 }
       );
     }
+
+    await cache.set(cacheKey, organization, 300); // 5 minutes cache
 
     return NextResponse.json(organization);
   } catch (error) {

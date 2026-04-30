@@ -1,5 +1,6 @@
 import { auth } from '@/auth';
 import { prisma } from '@/lib/db';
+import { cache, cacheKeys } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -22,6 +23,12 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        const cacheKey = cacheKeys.dashboardBranding(orgId);
+        const cachedBranding = await cache.get(cacheKey);
+        if (cachedBranding) {
+            return NextResponse.json(cachedBranding);
+        }
+
         // Fetch branding for organization
         const branding = await prisma.branding.findUnique({
             where: { organization_id: orgId },
@@ -33,6 +40,8 @@ export async function GET(request: NextRequest) {
                 { status: 404 }
             );
         }
+
+        await cache.set(cacheKey, branding, 300); // 5 minutes cache
 
         return NextResponse.json(branding);
     } catch (error) {
@@ -80,6 +89,16 @@ export async function POST(request: NextRequest) {
                 logo_url: logo_url !== undefined ? logo_url : existingBranding.logo_url,
             },
         });
+
+        // Invalidate caches
+        const org = await prisma.organization.findUnique({
+            where: { id: session.user.organization_id },
+            select: { slug: true }
+        });
+        if (org) {
+            await cache.del(cacheKeys.publicBranding(org.slug));
+        }
+        await cache.del(cacheKeys.dashboardBranding(session.user.organization_id));
 
         return NextResponse.json(updated);
     } catch (error) {

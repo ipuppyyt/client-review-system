@@ -1,5 +1,6 @@
 import { auth } from '@/auth';
 import { prisma } from '@/lib/db';
+import { cache, cacheKeys } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -22,6 +23,12 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        const cacheKey = cacheKeys.dashboardStats(orgId);
+        const cachedStats = await cache.get(cacheKey);
+        if (cachedStats) {
+            return NextResponse.json(cachedStats);
+        }
+
         // Get review statistics
         const reviews = await prisma.review.findMany({
             where: { organization_id: orgId },
@@ -36,12 +43,16 @@ export async function GET(request: NextRequest) {
                 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
                 : 0;
 
-        return NextResponse.json({
+        const stats = {
             totalReviews,
             publishedReviews,
             pendingReviews,
             averageRating,
-        });
+        };
+
+        await cache.set(cacheKey, stats, 60); // 1 minute cache
+
+        return NextResponse.json(stats);
     } catch (error) {
         console.error('Stats error:', error);
         return NextResponse.json(

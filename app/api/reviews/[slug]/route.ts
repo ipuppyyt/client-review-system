@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db';
+import { cache, cacheKeys } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -9,6 +10,12 @@ export async function GET(
 ) {
     try {
         const { slug } = await params;
+
+        const cacheKey = cacheKeys.publicReviews(slug);
+        const cachedReviews = await cache.get(cacheKey);
+        if (cachedReviews) {
+            return NextResponse.json(cachedReviews);
+        }
 
         // Find organization by slug
         const organization = await prisma.organization.findUnique({
@@ -37,6 +44,8 @@ export async function GET(
             },
             orderBy: { created_at: 'desc' },
         });
+
+        await cache.set(cacheKey, reviews, 300); // Cache for 5 minutes
 
         return NextResponse.json(reviews);
     } catch (error) {
@@ -93,6 +102,11 @@ export async function POST(
                 is_published: false,
             },
         });
+
+        // Invalidate caches
+        await cache.del(cacheKeys.publicReviews(slug));
+        await cache.del(cacheKeys.dashboardReviews(organization.id));
+        await cache.del(cacheKeys.dashboardStats(organization.id));
 
         return NextResponse.json(review, { status: 201 });
     } catch (error) {

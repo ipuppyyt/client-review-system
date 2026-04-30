@@ -1,5 +1,6 @@
 import { auth } from '@/auth';
 import { prisma } from '@/lib/db';
+import { cache, cacheKeys } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -22,11 +23,19 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        const cacheKey = cacheKeys.dashboardReviews(orgId);
+        const cachedReviews = await cache.get(cacheKey);
+        if (cachedReviews) {
+            return NextResponse.json(cachedReviews);
+        }
+
         // Fetch all reviews for organization
         const reviews = await prisma.review.findMany({
             where: { organization_id: orgId },
             orderBy: { created_at: 'desc' },
         });
+
+        await cache.set(cacheKey, reviews, 60); // 1 minute cache for dashboard
 
         return NextResponse.json(reviews);
     } catch (error) {
@@ -69,6 +78,17 @@ export async function PATCH(request: NextRequest) {
             data: { is_published },
         });
 
+        // Invalidate caches
+        const org = await prisma.organization.findUnique({
+            where: { id: session.user.organization_id },
+            select: { slug: true }
+        });
+        if (org) {
+            await cache.del(cacheKeys.publicReviews(org.slug));
+        }
+        await cache.del(cacheKeys.dashboardReviews(session.user.organization_id));
+        await cache.del(cacheKeys.dashboardStats(session.user.organization_id));
+
         return NextResponse.json(updated);
     } catch (error) {
         console.error('Update review error:', error);
@@ -108,6 +128,17 @@ export async function DELETE(request: NextRequest) {
         await prisma.review.delete({
             where: { id: reviewId },
         });
+
+        // Invalidate caches
+        const org = await prisma.organization.findUnique({
+            where: { id: session.user.organization_id },
+            select: { slug: true }
+        });
+        if (org) {
+            await cache.del(cacheKeys.publicReviews(org.slug));
+        }
+        await cache.del(cacheKeys.dashboardReviews(session.user.organization_id));
+        await cache.del(cacheKeys.dashboardStats(session.user.organization_id));
 
         return NextResponse.json({ success: true });
     } catch (error) {

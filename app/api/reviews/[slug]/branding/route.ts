@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db';
+import { cache, cacheKeys } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -9,6 +10,12 @@ export async function GET(
 ) {
     try {
         const { slug } = await params;
+
+        const cacheKey = cacheKeys.publicBranding(slug);
+        const cachedBranding = await cache.get(cacheKey);
+        if (cachedBranding) {
+            return NextResponse.json(cachedBranding);
+        }
 
         // Find organization by slug
         const organization = await prisma.organization.findUnique({
@@ -31,13 +38,17 @@ export async function GET(
             font_family: 'Inter',
         };
 
-        return NextResponse.json({
+        const responseData = {
             organization: {
                 name: organization.name,
                 slug: organization.slug,
             },
             branding,
-        });
+        };
+
+        await cache.set(cacheKey, responseData, 300); // 5 minutes cache
+
+        return NextResponse.json(responseData);
     } catch (error) {
         console.error('Get branding error:', error);
         return NextResponse.json(
