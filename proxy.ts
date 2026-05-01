@@ -44,9 +44,18 @@ export default async function proxy(request: NextRequest) {
   // Check auth session for protected routes
   const session = await auth();
 
-  // If no session and trying to access dashboard, redirect to login
-  if (!session && pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  const isAuthRoute = pathname === "/login" || pathname === "/";
+  const isProtectedRoute = pathname.startsWith("/dashboard");
+
+  // If trying to access protected routes without a session, redirect to login
+  if (isProtectedRoute && !session) {
+    const callbackUrl = encodeURIComponent(request.nextUrl.pathname + request.nextUrl.search);
+    return NextResponse.redirect(new URL(`/login?callbackUrl=${callbackUrl}`, request.url));
+  }
+
+  // If session exists and trying to access login or root, redirect to dashboard
+  if (session && isAuthRoute) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();

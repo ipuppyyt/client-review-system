@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/db';
 import { cache, cacheKeys } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs/promises';
+import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,17 +71,22 @@ export async function POST(
 ) {
     try {
         const { token } = await params;
-        const { rating, message, photos = [], videos = [] } = await request.json();
+        const formData = await request.formData();
+        
+        const ratingStr = formData.get('rating') as string;
+        const message = formData.get('message') as string;
+        
+        const rating = parseInt(ratingStr);
 
         // Validate input
-        if (!rating || !message) {
+        if (!ratingStr || !message) {
             return NextResponse.json(
                 { error: 'Missing required fields' },
                 { status: 400 }
             );
         }
 
-        if (rating < 1 || rating > 5) {
+        if (isNaN(rating) || rating < 1 || rating > 5) {
             return NextResponse.json(
                 { error: 'Rating must be between 1 and 5' },
                 { status: 400 }
@@ -106,6 +113,33 @@ export async function POST(
             );
         }
 
+        // Process uploads
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+        await fs.mkdir(uploadDir, { recursive: true }).catch(() => {});
+
+        const photoUrls: string[] = [];
+        const videoUrls: string[] = [];
+
+        const photos = formData.getAll('photos') as File[];
+        for (const photo of photos) {
+            if (photo.size > 0) {
+                const ext = path.extname(photo.name) || '.webp';
+                const filename = `photo_${Date.now()}_${Math.random().toString(36).substring(7)}${ext}`;
+                await fs.writeFile(path.join(uploadDir, filename), Buffer.from(await photo.arrayBuffer()));
+                photoUrls.push(`/uploads/${filename}`);
+            }
+        }
+
+        const videos = formData.getAll('videos') as File[];
+        for (const video of videos) {
+            if (video.size > 0) {
+                const ext = path.extname(video.name) || '.mp4';
+                const filename = `video_${Date.now()}_${Math.random().toString(36).substring(7)}${ext}`;
+                await fs.writeFile(path.join(uploadDir, filename), Buffer.from(await video.arrayBuffer()));
+                videoUrls.push(`/uploads/${filename}`);
+            }
+        }
+
         // Create review (unpublished by default)
         const review = await prisma.review.create({
             data: {
@@ -113,8 +147,8 @@ export async function POST(
                 client_id: client.id,
                 rating,
                 message,
-                photos,
-                videos,
+                photos: photoUrls,
+                videos: videoUrls,
                 is_published: false,
             },
         });

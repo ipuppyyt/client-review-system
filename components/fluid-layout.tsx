@@ -58,9 +58,9 @@ export function PageHeader({ title, description, className = '', children }: Pag
   return (
     <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 ${className}`}>
       <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{title}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-base-content tracking-tight">{title}</h1>
         {description && (
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">{description}</p>
+          <p className="text-sm sm:text-base text-base-content/70">{description}</p>
         )}
       </div>
       {children && <div>{children}</div>}

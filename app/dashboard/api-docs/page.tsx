@@ -42,25 +42,25 @@ export default function ApiDocsPage() {
             <Card>
                 <CardBody className="p-6">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="bg-indigo-100 dark:bg-indigo-900 p-2 rounded-lg text-indigo-600 dark:text-indigo-400">
+                        <div className="bg-primary/10 p-2 rounded-lg text-primary">
                             <Code className="w-6 h-6" />
                         </div>
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Public Reviews Endpoint</h2>
+                        <h2 className="text-xl font-semibold text-base-content">Public Reviews Endpoint</h2>
                     </div>
 
                     <div className="space-y-4">
-                        <p className="text-gray-600 dark:text-gray-400">
+                        <p className="text-base-content/70">
                             Use this REST endpoint to fetch all of your published reviews. You can hit this endpoint directly from your frontend or backend to display customer feedback on your website.
                         </p>
 
-                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <code className="text-sm text-gray-800 dark:text-gray-200 break-all font-mono">
+                        <div className="bg-base-100 rounded-lg border border-base-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <code className="text-sm text-base-content break-all font-mono">
                                 GET {apiEndpoint}
                             </code>
                             <button
                                 onClick={handleCopy}
                                 disabled={!orgSlug}
-                                className="shrink-0 flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                                className="btn btn-primary btn-sm shrink-0"
                             >
                                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                                 {copied ? 'Copied' : 'Copy'}
@@ -68,9 +68,9 @@ export default function ApiDocsPage() {
                         </div>
 
                         <div className="mt-8">
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Response Format</h3>
-                            <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                <pre className="text-sm text-green-400 font-mono">
+                            <h3 className="text-lg font-medium text-base-content mb-2">Response Format</h3>
+                            <div className="bg-base-200 rounded-lg p-4 overflow-x-auto">
+                                <pre className="text-sm text-primary font-mono">
                                     {`[
   {
     "id": "uuid",

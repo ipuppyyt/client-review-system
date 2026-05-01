@@ -47,14 +47,14 @@ export default function DashboardNavigation({ onNavigate }: DashboardNavigationP
                                 href={item.href}
                                 onClick={onNavigate}
                                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
                   ${isActive
-                                        ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300'
-                                        : 'text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                                        ? 'bg-primary/10 text-primary shadow-sm'
+                                        : 'text-base-content/70 hover:text-base-content hover:bg-base-200'
                                     }
                 `}
                             >
-                                <item.icon className="w-4 h-4 shrink-0" />
+                                <item.icon className={`w-4 h-4 shrink-0 ${isActive ? 'opacity-100' : 'opacity-70 text-base-content/70'}`} />
                                 <span className="truncate">{item.label}</span>
                             </Link>
                         </li>

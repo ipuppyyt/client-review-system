@@ -8,23 +8,24 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 dark:bg-gray-950 p-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 p-8">
-        {/* Logo / Brand */}
-        <div className="mb-8 text-center space-y-1">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl mb-3">
-            <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">R</span>
+    <main className="hero min-h-screen bg-base-200">
+      <div className="hero-content w-full max-w-md">
+        <div className="card w-full bg-base-100 shadow-2xl border border-base-200">
+          <div className="card-body p-8">
+            <div className="mb-8 text-center space-y-2">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <span className="text-2xl font-bold">R</span>
+              </div>
+              <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
+              <p className="text-base-content/70 text-sm">
+                Sign in to access your dashboard
+              </p>
+            </div>
+            <Suspense fallback={<div className="text-center text-sm text-base-content/70">Loading...</div>}>
+              <LoginForm />
+            </Suspense>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Welcome back
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            Sign in to access your dashboard
-          </p>
         </div>
-        <Suspense fallback={<div className="text-center text-sm text-gray-500">Loading...</div>}>
-          <LoginForm />
-        </Suspense>
       </div>
     </main>
   );

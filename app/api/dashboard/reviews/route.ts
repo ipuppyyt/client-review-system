@@ -130,6 +130,14 @@ export async function DELETE(request: NextRequest) {
             where: { id: reviewId },
         });
 
+        // Re-allow client to submit
+        if (review.client_id) {
+            await prisma.client.update({
+                where: { id: review.client_id },
+                data: { is_completed: false },
+            });
+        }
+
         // Invalidate caches
         const org = await prisma.organization.findUnique({
             where: { id: session.user.organization_id },

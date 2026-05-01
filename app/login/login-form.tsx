@@ -16,12 +16,7 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-const inputClass = `flex h-10 w-full rounded-lg border border-gray-300 dark:border-gray-700
-  bg-white dark:bg-gray-800 px-3 py-2 text-sm
-  text-gray-900 dark:text-gray-100
-  placeholder:text-gray-400 dark:placeholder:text-gray-500
-  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
-  disabled:cursor-not-allowed disabled:opacity-50 transition-colors`;
+const inputClass = `input input-bordered input-primary w-full`;
 
 export default function LoginForm() {
   const router = useRouter();
@@ -63,10 +58,9 @@ export default function LoginForm() {
         <Alert type="error" message={error} onClose={() => setError(null)} />
       )}
 
-      {/* Email */}
-      <div className="space-y-1.5">
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="email">
-          Email
+      <div className="form-control w-full">
+        <label className="label" htmlFor="email">
+          <span className="label-text">Email</span>
         </label>
         <input
           {...form.register("email")}
@@ -78,16 +72,15 @@ export default function LoginForm() {
           autoComplete="email"
         />
         {form.formState.errors.email && (
-          <p className="text-xs text-red-500 dark:text-red-400">
-            {form.formState.errors.email.message}
-          </p>
+          <label className="label">
+            <span className="label-text-alt text-error">{form.formState.errors.email.message}</span>
+          </label>
         )}
       </div>
 
-      {/* Password */}
-      <div className="space-y-1.5">
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="password">
-          Password
+      <div className="form-control w-full">
+        <label className="label" htmlFor="password">
+          <span className="label-text">Password</span>
         </label>
         <input
           {...form.register("password")}
@@ -99,9 +92,9 @@ export default function LoginForm() {
           autoComplete="current-password"
         />
         {form.formState.errors.password && (
-          <p className="text-xs text-red-500 dark:text-red-400">
-            {form.formState.errors.password.message}
-          </p>
+          <label className="label">
+            <span className="label-text-alt text-error">{form.formState.errors.password.message}</span>
+          </label>
         )}
       </div>
 
@@ -109,10 +102,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg text-sm font-medium
-            bg-indigo-600 hover:bg-indigo-700 text-white h-10 px-4 py-2
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500
-            disabled:pointer-events-none disabled:opacity-50 transition-colors"
+          className="btn btn-primary w-full"
         >
           {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
           {isLoading ? "Signing in..." : "Sign in"}

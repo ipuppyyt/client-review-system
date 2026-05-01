@@ -67,29 +67,29 @@ export default function DashboardPage() {
             label: 'Total Reviews',
             value: stats.totalReviews,
             icon: MessageCircle,
-            iconBg: 'bg-blue-100 dark:bg-blue-950/50',
-            iconColor: 'text-blue-600 dark:text-blue-400',
+            iconBg: 'bg-primary/10',
+            iconColor: 'text-primary',
         },
         {
             label: 'Published',
             value: stats.publishedReviews,
             icon: Eye,
-            iconBg: 'bg-green-100 dark:bg-green-950/50',
-            iconColor: 'text-green-600 dark:text-green-400',
+            iconBg: 'bg-primary/10',
+            iconColor: 'text-primary',
         },
         {
             label: 'Pending',
             value: stats.pendingReviews,
             icon: Lock,
-            iconBg: 'bg-yellow-100 dark:bg-yellow-950/50',
-            iconColor: 'text-yellow-600 dark:text-yellow-400',
+            iconBg: 'bg-primary/10',
+            iconColor: 'text-primary',
         },
         {
             label: 'Avg Rating',
             value: stats.averageRating.toFixed(1),
             icon: Star,
-            iconBg: 'bg-purple-100 dark:bg-purple-950/50',
-            iconColor: 'text-purple-600 dark:text-purple-400',
+            iconBg: 'bg-primary/10',
+            iconColor: 'text-primary',
         },
     ];
 
@@ -107,10 +107,10 @@ export default function DashboardPage() {
                         <CardBody className="p-4 sm:p-6">
                             <div className="flex items-start sm:items-center justify-between gap-2">
                                 <div className="min-w-0">
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium truncate">{label}</p>
-                                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                                    <p className="text-base-content/60 text-sm font-medium truncate">{label}</p>
+                                    <p className="text-3xl font-bold text-base-content mt-2">
                                         {loading ? (
-                                            <span className="inline-block w-10 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                                            <span className="inline-block w-10 h-8 bg-base-200 rounded animate-pulse" />
                                         ) : value}
                                     </p>
                                 </div>
@@ -130,7 +130,7 @@ export default function DashboardPage() {
                 {/* Getting Started */}
                 <Card className="col-span-2 sm:col-span-1">
                     <CardBody className="p-5 sm:p-6 flex flex-col h-full">
-                        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-lg font-semibold text-base-content mb-4">
                             Getting Started
                         </h2>
                         <ul className="space-y-4">
@@ -141,10 +141,10 @@ export default function DashboardPage() {
                                 { step: 4, text: <>Embed reviews on your website using the <strong>API Docs</strong></> },
                             ].map(({ step, text }) => (
                                 <li key={step} className="flex gap-3 items-start">
-                                    <span className="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-full w-7 h-7 flex items-center justify-center text-sm font-semibold shrink-0">
+                                    <span className="bg-primary/10 text-primary rounded-full w-7 h-7 flex items-center justify-center text-sm font-semibold shrink-0">
                                         {step}
                                     </span>
-                                    <span className="text-sm text-gray-700 dark:text-gray-300 pt-1">{text}</span>
+                                    <span className="text-sm text-base-content/70 pt-1">{text}</span>
                                 </li>
                             ))}
                         </ul>

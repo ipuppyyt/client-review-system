@@ -8,13 +8,10 @@ const setupSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
   orgName: z.string().min(2, "Organization name must be at least 2 characters"),
   logoUrl: z.string().url().optional().or(z.literal("")),
-  primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
-  secondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
 });
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if users already exist
     const userCount = await prisma.user.count();
     if (userCount > 0) {
       return NextResponse.json(
@@ -33,20 +30,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { email, password, orgName, logoUrl, primaryColor, secondaryColor } = validation.data;
+    const { email, password, orgName, logoUrl } = validation.data;
 
-    // Create slug from org name (lowercase, dashes)
     const slug = orgName
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create everything in a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // Create organization
       const organization = await tx.organization.create({
         data: {
           name: orgName,
@@ -54,23 +47,20 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Create branding
       const branding = await tx.branding.create({
         data: {
           organization_id: organization.id,
           logo_url: logoUrl || null,
-          primary_color: primaryColor,
-          secondary_color: secondaryColor,
+          primary_color: "#65c3c8",
+          secondary_color: "#f8fafc",
         },
       });
 
-      // Connect branding to organization
       await tx.organization.update({
         where: { id: organization.id },
         data: { branding: { connect: { id: branding.id } } },
       });
 
-      // Create superadmin user
       const user = await tx.user.create({
         data: {
           email,

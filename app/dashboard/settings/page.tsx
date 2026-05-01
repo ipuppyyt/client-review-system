@@ -14,9 +14,7 @@ interface OrganizationData {
     created_at: string;
 }
 
-const disabledInput = `w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700
-    rounded-lg bg-gray-50 dark:bg-gray-800/60 text-gray-600 dark:text-gray-400
-    cursor-not-allowed font-mono text-sm`;
+const disabledInput = 'input input-bordered input-disabled w-full text-sm font-mono';
 
 export default function SettingsPage() {
     const [org, setOrg] = useState<OrganizationData | null>(null);
@@ -47,9 +45,9 @@ export default function SettingsPage() {
     if (loading) {
         return (
             <div className="space-y-6">
-                <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded w-32 animate-pulse" />
+                <div className="h-10 bg-base-200 rounded w-32 animate-pulse" />
                 {[1, 2, 3].map((i) => (
-                    <Card key={i}><CardBody><div className="h-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></CardBody></Card>
+                    <Card key={i}><CardBody><div className="h-24 bg-base-200 rounded animate-pulse" /></CardBody></Card>
                 ))}
             </div>
         );
@@ -58,7 +56,7 @@ export default function SettingsPage() {
     if (!org) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-500 dark:text-gray-400">Unable to load organization settings</p>
+                <p className="text-base-content/70">Unable to load organization settings</p>
             </div>
         );
     }
@@ -76,33 +74,33 @@ export default function SettingsPage() {
             {/* Organization Info */}
             <Card>
                 <CardBody className="p-4 sm:p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                    <h2 className="text-lg font-semibold text-base-content mb-6">
                         Organization Information
                     </h2>
                     <div className="space-y-5">
                         {/* Name */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Organization Name
+                            <label className="label">
+                                <span className="label-text">Organization Name</span>
                             </label>
                             <input type="text" value={org.name} disabled className={disabledInput} />
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
-                                Contact support to change your organization name
-                            </p>
+                            <label className="label">
+                                <span className="label-text-alt text-base-content/70">Contact support to change your organization name</span>
+                            </label>
                         </div>
 
                         {/* Slug */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Organization Slug
+                            <label className="label">
+                                <span className="label-text">Organization Slug</span>
                             </label>
                             <div className="flex gap-2 flex-col sm:flex-row">
                                 <input type="text" value={org.slug} disabled className={`${disabledInput} flex-1`} />
                                 <button
                                     onClick={() => copyToClipboard(org.slug, 'slug')}
-                                    className="w-full sm:w-auto px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors flex items-center justify-center gap-2 text-sm"
+                                    className="btn btn-ghost btn-sm w-full sm:w-auto flex items-center justify-center gap-2"
                                 >
-                                    {copied === 'slug' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                                    {copied === 'slug' ? <Check className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}
                                     <span>{copied === 'slug' ? 'Copied!' : 'Copy'}</span>
                                 </button>
                             </div>
@@ -110,8 +108,8 @@ export default function SettingsPage() {
 
                         {/* Created */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Created On
+                            <label className="label">
+                                <span className="label-text">Created On</span>
                             </label>
                             <input
                                 type="text"
@@ -127,10 +125,10 @@ export default function SettingsPage() {
             {/* Review Form URL */}
             <Card>
                 <CardBody className="p-4 sm:p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    <h2 className="text-lg font-semibold text-base-content mb-2">
                         Review Form URL
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    <p className="text-sm text-base-content/70 mb-4">
                         Share this URL with your customers to collect reviews
                     </p>
 
@@ -138,7 +136,7 @@ export default function SettingsPage() {
                         <input type="text" value={reviewFormUrl} disabled className={`${disabledInput} flex-1`} />
                         <button
                             onClick={() => copyToClipboard(reviewFormUrl, 'url')}
-                            className="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2 text-sm font-medium shrink-0"
+                            className="btn btn-primary btn-sm w-full sm:w-auto flex items-center justify-center gap-2 shrink-0"
                         >
                             {copied === 'url' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                             <span>{copied === 'url' ? 'Copied!' : 'Copy URL'}</span>
@@ -155,10 +153,10 @@ export default function SettingsPage() {
             {/* API Docs */}
             <Card>
                 <CardBody className="p-4 sm:p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    <h2 className="text-lg font-semibold text-base-content mb-2">
                         API Documentation
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                    <p className="text-sm text-base-content/70 mb-6">
                         Use this endpoint to embed published reviews in your website
                     </p>
 
@@ -166,33 +164,32 @@ export default function SettingsPage() {
                         {/* Endpoint */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                <h3 className="text-sm font-semibold text-base-content">
                                     GET Published Reviews
                                 </h3>
                                 <button
                                     onClick={() => copyToClipboard(apiEndpoint, 'api')}
-                                    className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                                    className="btn btn-link btn-xs text-primary hover:text-primary-focus"
                                 >
                                     {copied === 'api' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                                     {copied === 'api' ? 'Copied' : 'Copy'}
                                 </button>
                             </div>
-                            <div className="bg-gray-900 dark:bg-gray-950 text-green-400 rounded-lg p-4 font-mono text-xs sm:text-sm overflow-x-auto border border-gray-800">
-                                <span className="text-gray-500 select-none">GET </span>
-                                {apiEndpoint}
+                            <div className="mockup-code bg-base-300 text-success p-4 font-mono text-xs sm:text-sm overflow-x-auto">
+                                <pre className="text-base-content/70">GET {apiEndpoint}</pre>
                             </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                            <p className="text-xs text-base-content/70 mt-2">
                                 Returns an array of published reviews. No authentication required.
                             </p>
                         </div>
 
                         {/* Response */}
-                        <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                                Example Response
-                            </h3>
-                            <div className="bg-gray-900 dark:bg-gray-950 text-gray-100 rounded-lg p-4 font-mono text-xs overflow-x-auto border border-gray-800">
-                                <pre className="whitespace-pre text-gray-300">{`[
+                        <div className="divider"></div>
+                        <h3 className="text-sm font-semibold text-base-content mb-2">
+                            Example Response
+                        </h3>
+                        <div className="mockup-code bg-base-300 text-base-content p-4 font-mono text-xs overflow-x-auto">
+                            <pre className="whitespace-pre text-base-content/80">{`[
   {
     "id": "uuid",
     "customer_name": "Jane Smith",
@@ -201,28 +198,29 @@ export default function SettingsPage() {
     "created_at": "2024-01-15T10:30:00Z"
   }
 ]`}</pre>
-                            </div>
                         </div>
                     </div>
-                </CardBody>
-            </Card>
+            </CardBody>
+        </Card>
 
-            {/* Danger Zone */}
-            <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-lg p-4 sm:p-6">
-                <h2 className="text-base font-semibold text-red-900 dark:text-red-300 mb-2">Danger Zone</h2>
-                <p className="text-sm text-red-700 dark:text-red-400 mb-4">
-                    These actions are irreversible. Please proceed with caution.
-                </p>
-                <button
-                    disabled
-                    className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium opacity-50 cursor-not-allowed"
-                >
-                    Delete Organization
-                </button>
-                <p className="text-xs text-red-600 dark:text-red-500 mt-2">
-                    Coming soon — contact support to delete your organization.
-                </p>
-            </div>
-        </div>
+            {/* Danger Zone */ }
+    <Card className="border-error">
+        <CardBody className="p-4 sm:p-6">
+            <h2 className="text-lg font-semibold text-error mb-2">Danger Zone</h2>
+            <p className="text-sm text-error/80 mb-4">
+                These actions are irreversible. Please proceed with caution.
+            </p>
+            <button
+                disabled
+                className="btn btn-error btn-sm w-full sm:w-auto opacity-50 cursor-not-allowed"
+            >
+                Delete Organization
+            </button>
+            <p className="text-xs text-error/70 mt-2">
+                Coming soon — contact support to delete your organization.
+            </p>
+        </CardBody>
+    </Card>
+        </div >
     );
 }

@@ -12,36 +12,36 @@ interface AlertProps {
 
 const alertStyles = {
     success: {
-        bg: 'bg-green-50 dark:bg-green-950/40',
-        border: 'border-green-200 dark:border-green-800',
+        bg: 'alert alert-success',
+        border: '',
         icon: CheckCircle,
-        iconColor: 'text-green-600 dark:text-green-400',
-        textColor: 'text-green-700 dark:text-green-300',
-        titleColor: 'text-green-900 dark:text-green-200',
+        iconColor: '',
+        textColor: '',
+        titleColor: '',
     },
     error: {
-        bg: 'bg-red-50 dark:bg-red-950/40',
-        border: 'border-red-200 dark:border-red-800',
+        bg: 'alert alert-error',
+        border: '',
         icon: AlertCircle,
-        iconColor: 'text-red-600 dark:text-red-400',
-        textColor: 'text-red-700 dark:text-red-300',
-        titleColor: 'text-red-900 dark:text-red-200',
+        iconColor: '',
+        textColor: '',
+        titleColor: '',
     },
     warning: {
-        bg: 'bg-yellow-50 dark:bg-yellow-950/40',
-        border: 'border-yellow-200 dark:border-yellow-800',
+        bg: 'alert alert-warning',
+        border: '',
         icon: AlertCircle,
-        iconColor: 'text-yellow-600 dark:text-yellow-400',
-        textColor: 'text-yellow-700 dark:text-yellow-300',
-        titleColor: 'text-yellow-900 dark:text-yellow-200',
+        iconColor: '',
+        textColor: '',
+        titleColor: '',
     },
     info: {
-        bg: 'bg-blue-50 dark:bg-blue-950/40',
-        border: 'border-blue-200 dark:border-blue-800',
+        bg: 'alert alert-info',
+        border: '',
         icon: Info,
-        iconColor: 'text-blue-600 dark:text-blue-400',
-        textColor: 'text-blue-700 dark:text-blue-300',
-        titleColor: 'text-blue-900 dark:text-blue-200',
+        iconColor: '',
+        textColor: '',
+        titleColor: '',
     },
 };
 
@@ -50,16 +50,16 @@ export function Alert({ type, title, message, onClose }: AlertProps) {
     const Icon = style.icon;
 
     return (
-        <div className={`${style.bg} border ${style.border} rounded-lg p-4 flex gap-3`}>
-            <Icon className={`w-5 h-5 ${style.iconColor} shrink-0 mt-0.5`} />
-            <div className="flex-1 min-w-0">
-                {title && <h3 className={`font-semibold text-sm ${style.titleColor}`}>{title}</h3>}
-                <p className={`text-sm ${title ? 'mt-1' : ''} ${style.textColor}`}>{message}</p>
+        <div className={`${style.bg} shadow-lg`}>
+            <Icon className="w-6 h-6" />
+            <div>
+                {title && <div className="font-bold">{title}</div>}
+                <div>{message}</div>
             </div>
             {onClose && (
                 <button
                     onClick={onClose}
-                    className={`${style.iconColor} hover:opacity-70 shrink-0 transition-opacity`}
+                    className="btn btn-sm btn-circle btn-ghost"
                     aria-label="Dismiss"
                 >
                     <X className="w-4 h-4" />

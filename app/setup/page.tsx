@@ -12,9 +12,7 @@ const setupSchema = z.object({
   email: z.email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   orgName: z.string().min(2, "Organization name must be at least 2 characters"),
-  logoUrl: z.url("Please enter a valid URL").optional().or(z.literal("")),
-  primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Use format #000000"),
-  secondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Use format #FFFFFF"),
+  logoUrl: z.string().url().optional().or(z.literal("")),
 });
 
 type SetupFormValues = z.infer<typeof setupSchema>;
@@ -31,8 +29,6 @@ export default function SetupPage() {
       password: "",
       orgName: "",
       logoUrl: "",
-      primaryColor: "#000000",
-      secondaryColor: "#ffffff",
     },
   });
 
@@ -57,8 +53,6 @@ export default function SetupPage() {
         throw new Error(result.error || "Setup failed");
       }
 
-      // Redirect to login - user will log in manually
-      // This ensures the session is properly established before accessing dashboard
       router.push("/login");
       router.refresh();
     } catch (err) {
@@ -69,185 +63,147 @@ export default function SetupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Welcome</h1>
-            <p className="text-sm text-gray-600 mt-2">Set up your organization</p>
-          </div>
-
-          {error && (
-            <div className="mb-6">
-              <Alert type="error" message={error} onClose={() => setError(null)} />
-            </div>
-          )}
-
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Admin Account Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-3">
-                <User className="h-5 w-5 text-gray-700" />
-                <h2 className="text-sm font-semibold text-gray-900">Admin Account</h2>
+    <div className="min-h-screen bg-base-200 py-12 px-4">
+      <div className="mx-auto w-full max-w-3xl">
+        <div className="card bg-base-100 shadow-2xl">
+          <div className="card-body p-8">
+            <div className="mb-8 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Building2 className="w-8 h-8" />
               </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700" htmlFor="email">
-                  Email
-                </label>
-                <input
-                  {...form.register("email")}
-                  id="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-                  disabled={isLoading}
-                />
-                {form.formState.errors.email && (
-                  <p className="text-xs text-red-500">{form.formState.errors.email.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700" htmlFor="password">
-                  Password
-                </label>
-                <input
-                  {...form.register("password")}
-                  id="password"
-                  type="password"
-                  placeholder="At least 8 characters"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-                  disabled={isLoading}
-                />
-                {form.formState.errors.password && (
-                  <p className="text-xs text-red-500">{form.formState.errors.password.message}</p>
-                )}
-              </div>
+              <h1 className="text-3xl font-bold">Welcome</h1>
+              <p className="text-sm text-base-content/70 mt-2">Set up your organization and start collecting reviews.</p>
             </div>
 
-            {/* Organization Section */}
-            <div className="space-y-4 pt-4 border-t border-gray-200">
-              <div className="flex items-center gap-2 mb-3">
-                <Building2 className="h-5 w-5 text-gray-700" />
-                <h2 className="text-sm font-semibold text-gray-900">Organization</h2>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700" htmlFor="orgName">
-                  Organization Name
-                </label>
-                <input
-                  {...form.register("orgName")}
-                  id="orgName"
-                  type="text"
-                  placeholder="Acme Inc"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-                  disabled={isLoading}
-                />
-                {form.formState.errors.orgName && (
-                  <p className="text-xs text-red-500">{form.formState.errors.orgName.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Organization Slug</label>
-                <div className="flex items-center h-10 px-3 rounded-md border border-gray-200 bg-gray-50 text-sm text-gray-600">
-                  <span className="text-gray-400 mr-1">/r/</span>
-                  <span className="font-mono">{slugPreview}</span>
+            {error && (
+              <div className="alert alert-error mb-6">
+                <div className="flex-1">
+                  <span>{error}</span>
                 </div>
-                <p className="text-xs text-gray-500">This will be your public review URL</p>
               </div>
-            </div>
+            )}
 
-            {/* Branding Section */}
-            <div className="space-y-4 pt-4 border-t border-gray-200">
-              <div className="flex items-center gap-2 mb-3">
-                <Palette className="h-5 w-5 text-gray-700" />
-                <h2 className="text-sm font-semibold text-gray-900">Branding</h2>
-              </div>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <User className="w-5 h-5 text-primary" />
+                  <h2 className="text-sm font-semibold">Admin Account</h2>
+                </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700" htmlFor="logoUrl">
-                  Logo URL (optional)
-                </label>
-                <input
-                  {...form.register("logoUrl")}
-                  id="logoUrl"
-                  type="text"
-                  placeholder="https://example.com/logo.png"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-                  disabled={isLoading}
-                />
-                {form.formState.errors.logoUrl && (
-                  <p className="text-xs text-red-500">{form.formState.errors.logoUrl.message}</p>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700" htmlFor="primaryColor">
-                    Primary Color
+                <div className="form-control w-full">
+                  <label className="label" htmlFor="email">
+                    <span className="label-text">Email</span>
                   </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      {...form.register("primaryColor")}
-                      id="primaryColor"
-                      type="color"
-                      className="h-10 w-12 rounded-md border border-gray-300 cursor-pointer"
-                      disabled={isLoading}
-                    />
-                    <input
-                      type="text"
-                      value={form.watch("primaryColor")}
-                      onChange={(e) => form.setValue("primaryColor", e.target.value)}
-                      className="flex h-10 flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-colors font-mono"
-                      disabled={isLoading}
-                    />
-                  </div>
-                  {form.formState.errors.primaryColor && (
-                    <p className="text-xs text-red-500">{form.formState.errors.primaryColor.message}</p>
+                  <input
+                    {...form.register("email")}
+                    id="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    className="input input-bordered input-primary w-full"
+                    disabled={isLoading}
+                  />
+                  {form.formState.errors.email && (
+                    <label className="label">
+                      <span className="label-text-alt text-error">{form.formState.errors.email.message}</span>
+                    </label>
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700" htmlFor="secondaryColor">
-                    Secondary Color
+                <div className="form-control w-full">
+                  <label className="label" htmlFor="password">
+                    <span className="label-text">Password</span>
                   </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      {...form.register("secondaryColor")}
-                      id="secondaryColor"
-                      type="color"
-                      className="h-10 w-12 rounded-md border border-gray-300 cursor-pointer"
-                      disabled={isLoading}
-                    />
-                    <input
-                      type="text"
-                      value={form.watch("secondaryColor")}
-                      onChange={(e) => form.setValue("secondaryColor", e.target.value)}
-                      className="flex h-10 flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-colors font-mono"
-                      disabled={isLoading}
-                    />
-                  </div>
-                  {form.formState.errors.secondaryColor && (
-                    <p className="text-xs text-red-500">{form.formState.errors.secondaryColor.message}</p>
+                  <input
+                    {...form.register("password")}
+                    id="password"
+                    type="password"
+                    placeholder="At least 8 characters"
+                    className="input input-bordered input-primary w-full"
+                    disabled={isLoading}
+                  />
+                  {form.formState.errors.password && (
+                    <label className="label">
+                      <span className="label-text-alt text-error">{form.formState.errors.password.message}</span>
+                    </label>
                   )}
                 </div>
               </div>
-            </div>
 
-            <div className="pt-6">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="inline-flex w-full items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 bg-gray-900 text-white shadow hover:bg-gray-900/90 h-10 px-4 py-2"
-              >
+              <div className="divider">Organization</div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  <h2 className="text-sm font-semibold">Organization</h2>
+                </div>
+
+                <div className="form-control w-full">
+                  <label className="label" htmlFor="orgName">
+                    <span className="label-text">Organization Name</span>
+                  </label>
+                  <input
+                    {...form.register("orgName")}
+                    id="orgName"
+                    type="text"
+                    placeholder="Acme Inc"
+                    className="input input-bordered input-primary w-full"
+                    disabled={isLoading}
+                  />
+                  {form.formState.errors.orgName && (
+                    <label className="label">
+                      <span className="label-text-alt text-error">{form.formState.errors.orgName.message}</span>
+                    </label>
+                  )}
+                </div>
+
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Organization Slug</span>
+                  </label>
+                  <div className="input input-bordered bg-base-200 text-base-content w-full">
+                    <span className="text-base-content/70">/r/</span>
+                    <span className="font-mono ml-2">{slugPreview}</span>
+                  </div>
+                  <p className="text-sm text-base-content/60 mt-2">This will be your public review URL.</p>
+                </div>
+              </div>
+
+              <div className="divider">Branding</div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Palette className="w-5 h-5 text-primary" />
+                  <h2 className="text-sm font-semibold">Logo</h2>
+                </div>
+
+                <div className="form-control w-full">
+                  <label className="label" htmlFor="logoUrl">
+                    <span className="label-text">Logo URL (optional)</span>
+                  </label>
+                  <input
+                    {...form.register("logoUrl")}
+                    id="logoUrl"
+                    type="text"
+                    placeholder="https://example.com/logo.png"
+                    className="input input-bordered input-primary w-full"
+                    disabled={isLoading}
+                  />
+                  {form.formState.errors.logoUrl && (
+                    <label className="label">
+                      <span className="label-text-alt text-error">{form.formState.errors.logoUrl.message}</span>
+                    </label>
+                  )}
+                </div>
+
+                <p className="text-sm text-base-content/60">DaisyUI theme styles are applied automatically.</p>
+              </div>
+
+              <button type="submit" disabled={isLoading} className="btn btn-primary w-full mt-2">
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading ? "Setting up..." : "Complete Setup"}
               </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>
