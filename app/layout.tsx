@@ -16,7 +16,7 @@ const fontVariables = Object.values(fonts)
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" data-theme="business" className={`${fontVariables} h-full antialiased`}>
+    <html lang="en" data-theme="dark" className={`${fontVariables} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
       </body>

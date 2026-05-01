@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-  themes: silk --default;
+  themes: dark dark --default;
 }
 
 @theme inline {
